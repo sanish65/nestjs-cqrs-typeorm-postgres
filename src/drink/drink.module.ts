@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { TypeOrmModule } from '@nestjs/typeorm';
 // import { Drink } from 'src/entities/drink';
+// alternate the { Drink }  module for test-case / localhost start
 import { Drink } from '../entities/drink';
 
 import { CreateDrinkHandler } from './commands/handler/create-drink.handler';
