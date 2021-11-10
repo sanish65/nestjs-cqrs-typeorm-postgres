@@ -10,12 +10,10 @@ export class DeleteDrinkHandler implements ICommandHandler<DeleteDrinkCommand> {
     constructor(@InjectRepository(Drink) private drinksRepo:Repository<Drink>){}
 
     async execute(command: DeleteDrinkCommand) : Promise<any>{
-        console.log("deletion for drinks by id");
-
         const { id } = command;
         console.log(command);
         const updated = await this.drinksRepo.delete(id);
-        return updated;
+        return { deleted: true };
      
     }
 

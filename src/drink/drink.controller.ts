@@ -37,10 +37,25 @@ export class DrinkController {
         @Body('money') Imoney: number){
        
         return this.commandBus.execute(new UpdateDrinkCommand(id, Idrinks , Imoney ))
+    }
+
+    @Patch('patch/:id')
+    @HttpCode(201)
+    @UsePipes(new ValidationPipe({ transform:true }))
+    async patchDrinks(
+        @Param('id') id:string , 
+        @Body('fund') Ifund: fund,
+        @Body('income') Income: income,
+        @Body('coke') Icoke: coke,
+        @Body('pepsi') Ipepsi: pepsi,
+        @Body('dew') Idew: dew){
+       
+        return this.commandBus.execute(new PatchDrinkCommand(id, Ifund, Income, Icoke, Ipepsi, Idew))
 
     }
 
     @Delete('delete/:id')
+    @HttpCode(200)
     removeDrinksById(
         @Param('id') id:string){
             console.log("Delete controller");

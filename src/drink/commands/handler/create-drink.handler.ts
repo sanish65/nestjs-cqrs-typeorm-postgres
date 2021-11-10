@@ -19,7 +19,8 @@ export class CreateDrinkHandler implements ICommandHandler<CreateDrinkCommand> {
         newDrinks.dew = command.dew;
 
         const data = await this.drinksRepo.insert(newDrinks);
-        return data;
+        if(data.generatedMaps)
+            return newDrinks;
     }
 
 }

@@ -29,96 +29,91 @@ describe('App (e2e)', () => {
       );
     });
 
-    it('Post drink, get all, get by id, delete', async () => {
-      const newDrink = {
-          fund : 1000000,
-          income: 100000,
-          coke: 1000000,
-          pepsi: 1000000,
-          dew: 100000
-      };
-      const data =  await request(app.getHttpServer())
-        .post('/drinks/add')
-        .send(newDrink)
-        .expect(201);
-
-        console.log("------------------------------------");
-        console.log(data.body);
-        console.log("------------------------------------");
-
-
-      expect(data.body).toEqual({
-        ...newDrink,
-        id: expect.any(String),
-      });
-
-      const getDrinks = await request(app.getHttpServer()).get('/drinks/all').expect(200);
-      expect(getDrinks.body).toEqual(expect.any(Array));
-      expect(getDrinks.body.length).toBe(1);
-      expect(getDrinks.body[0]).toEqual({
-        ...newDrink,
-        id: expect.any(String),
-      });
-
-
-
-      const secDrink = await request(app.getHttpServer())
-        .get(`/drinks/drink/${data.body.id}`)
-        .expect(200);
-      expect(secDrink.body).toEqual(data.body);
-      return request(app.getHttpServer())
-        .delete(`/drinks/delete/${data.body.id}`)
-        .expect(200)
-        .expect({ deleted: true });
-    });
-
-
-    // it('post drink, get drink by id, update, get by id, delete', async () => {
-    //   const thirdDrinks = {
-    //       fund : 10000,
-    //       income: 0,
-    //       coke: 100,
-    //       pepsi: 100,
-    //       dew: 100
+    // it('Post drink, get all, get by id, delete', async () => {
+    //   const newDrink = {
+    //       fund : 1000000,
+    //       income: 100000,
+    //       coke: 1000000,
+    //       pepsi: 1000000,
+    //       dew: 100000
     //   };
-    //   const secodData = await request(app.getHttpServer())
+    //   const data =  await request(app.getHttpServer())
     //     .post('/drinks/add')
-    //     .send(thirdDrinks)
+    //     .send(newDrink)
     //     .expect(201);
 
-    //   expect(secodData.body).toEqual({
-    //     ...thirdDrinks,
-    //     id: expect.any(String),
+    //   expect(data.body).toEqual({
+    //     id: data.body.id,
+    //     ...newDrink,
     //   });
 
-    //   const returnDrinks = await request(app.getHttpServer())
-    //     .get(`/drinks/drink/${secodData.body.id}`)
-    //     .expect(200);
-
-    //   expect(returnDrinks.body).toEqual({
-    //     ...thirdDrinks,
-    //     id: expect.any(String),
+    //   const getDrinks = await request(app.getHttpServer()).get('/drinks/all').expect(200);
+    //   expect(getDrinks.body).toEqual(expect.any(Array));
+    //   expect(getDrinks.body.length).toBe(1);
+    //   expect(getDrinks.body[0]).toEqual({
+    //     id: getDrinks.body[0].id,
+    //     ...newDrink,
     //   });
 
 
-    //   const updateDrinks = await request(app.getHttpServer())
-    //     .patch(`/drinks/update/${secodData.body.id}`)
-    //     .send({
-    //       drink: "coke",
-    //       money: 200,
-    //     })
-    //     .expect(200);
-    //   expect(secodData.body).toEqual({ ...secodData.body, drink: "coke", money :200 });
 
-    //   const updateDrinks2 = await request(app.getHttpServer())
-    //     .get(`/drinks/${secodData.body.id}`)
+    //   const secDrink = await request(app.getHttpServer())
+    //     .get(`/drinks/drink/${data.body.id}`)
     //     .expect(200);
-
-    //   expect(updateDrinks2.body).toEqual(secodData.body);
+    //   expect(secDrink.body).toEqual(data.body);
     //   return request(app.getHttpServer())
-    //     .delete(`/cat/delete/${updateDrinks2.body.id}`)
+    //     .delete(`/drinks/delete/${data.body.id}`)
     //     .expect(200)
     //     .expect({ deleted: true });
     // });
+
+
+    it('post drink, get drink by id, update, get by id, delete', async () => {
+      const thirdDrinks = {
+          fund : 20000,
+          income: 0,
+          coke: 200,
+          pepsi: 200,
+          dew: 200
+      };
+      const secodData = await request(app.getHttpServer())
+        .post('/drinks/add')
+        .send(thirdDrinks)
+        .expect(201);
+
+      expect(secodData.body).toEqual({
+        id: secodData.body.id,
+        ...thirdDrinks,
+      });
+
+      const returnDrinks = await request(app.getHttpServer())
+        .get(`/drinks/drink/${secodData.body.id}`)
+        .expect(200);
+
+      expect(returnDrinks.body).toEqual({
+        id: secodData.body.id,
+        ...thirdDrinks,
+       });
+
+
+      const updateDrinks = await request(app.getHttpServer())
+        .patch(`/drinks/update/${secodData.body.id}`)
+        .send({
+          drink: "coke",
+          money: 200,
+        })
+        .expect(200);
+      expect(secodData.body).toEqual({ ...secodData.body, drink: "coke", money :200 });
+
+      const updateDrinks2 = await request(app.getHttpServer())
+        .get(`/drinks/${secodData.body.id}`)
+        .expect(200);
+
+      expect(updateDrinks2.body).toEqual(secodData.body);
+      return request(app.getHttpServer())
+        .delete(`/cat/delete/${updateDrinks2.body.id}`)
+        .expect(200)
+        .expect({ deleted: true });
+    });
   });
 });
