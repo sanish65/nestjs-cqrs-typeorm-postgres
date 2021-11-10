@@ -16,7 +16,7 @@ export class DrinkController {
         return await this.queryBus.execute(new GetDrinksQuery());
     }
 
-    @Get(':id')
+    @Get('drink/:id')
     async getSingle(@Param('id') id:string){
         return await this.queryBus.execute(new GetSingleDrinkQuery(id));
     }
@@ -25,10 +25,10 @@ export class DrinkController {
     @HttpCode(201)
     @UsePipes(new ValidationPipe({ transform:true }))
     async save(@Body() payload:CreateDrinkCommand) {
-        await this.commandBus.execute(payload);
+       return await this.commandBus.execute(payload);
     }
 
-    @Patch(':id')
+    @Patch('update/:id')
     @HttpCode(201)
     @UsePipes(new ValidationPipe({ transform:true }))
     async UpdateDrinks(
@@ -40,7 +40,7 @@ export class DrinkController {
 
     }
 
-    @Delete(':id')
+    @Delete('delete/:id')
     removeDrinksById(
         @Param('id') id:string){
             console.log("Delete controller");

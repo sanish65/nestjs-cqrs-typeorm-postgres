@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Drink } from 'src/entities/drink';
+// import { Drink } from 'src/entities/drink';
+import { Drink } from '../entities/drink';
+
 import { CreateDrinkHandler } from './commands/handler/create-drink.handler';
 import { DeleteDrinkHandler } from './commands/handler/delete-drink.handler';
 import { UpdateDrinkHandler } from './commands/handler/update-drink.handler';

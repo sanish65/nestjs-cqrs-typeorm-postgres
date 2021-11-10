@@ -1,6 +1,8 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Drink } from "src/entities/drink";
+import { Drink } from "../../../entities/drink";
+// import { Drink } from "src/entities/drink";
+
 import { Repository } from "typeorm";
 import { UpdateDrinkCommand } from "../impl/update-drink.command";
 import { classToPlain } from "class-transformer";

@@ -1,6 +1,8 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Drink } from "src/entities/drink";
+import { Drink } from "../../../entities/drink";
+// import { Drink } from "src/entities/drink";
+
 import { Repository } from "typeorm";
 import { CreateDrinkCommand } from "../impl/create-drink.command";
 
@@ -16,7 +18,8 @@ export class CreateDrinkHandler implements ICommandHandler<CreateDrinkCommand> {
         newDrinks.pepsi = command.pepsi;
         newDrinks.dew = command.dew;
 
-        await this.drinksRepo.insert(newDrinks);
+        const data = await this.drinksRepo.insert(newDrinks);
+        return data;
     }
 
 }

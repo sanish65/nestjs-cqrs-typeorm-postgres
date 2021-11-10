@@ -6,7 +6,5 @@ export class UpdateDrinkCommand implements ICommand {
         public readonly id:string,
         public readonly drink : string,
         public readonly money : number,
-
-
     ){}
 }
