@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Put, UsePi
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { CreateDrinkCommand } from './commands/impl/create-drink.command';
 import { DeleteDrinkCommand } from './commands/impl/delete-drink.command';
+import { PatchDrinkCommand } from './commands/impl/path-drink.command';
 import { UpdateDrinkCommand } from './commands/impl/update-drink.command';
 import { GetDrinksQuery } from './queries/impl/get-drinks.query';
 import { GetSingleDrinkQuery } from './queries/impl/get-singleDrink.query';
@@ -40,15 +41,15 @@ export class DrinkController {
     }
 
     @Patch('patch/:id')
-    @HttpCode(201)
+    @HttpCode(200)
     @UsePipes(new ValidationPipe({ transform:true }))
     async patchDrinks(
         @Param('id') id:string , 
-        @Body('fund') Ifund: fund,
-        @Body('income') Income: income,
-        @Body('coke') Icoke: coke,
-        @Body('pepsi') Ipepsi: pepsi,
-        @Body('dew') Idew: dew){
+        @Body('fund') Ifund: number,
+        @Body('income') Income: number,
+        @Body('coke') Icoke: number,
+        @Body('pepsi') Ipepsi: number,
+        @Body('dew') Idew: number){
        
         return this.commandBus.execute(new PatchDrinkCommand(id, Ifund, Income, Icoke, Ipepsi, Idew))
 
