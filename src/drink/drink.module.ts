@@ -14,6 +14,7 @@ import { DeleteDrinkCommand } from './commands/impl/delete-drink.command';
 import { PatchDrinkCommand } from './commands/impl/path-drink.command';
 import { UpdateDrinkCommand } from './commands/impl/update-drink.command';
 import { DrinkController } from './drink.controller';
+import { DrinksService } from './drink.service';
 import { GetDrinksHandler,  } from './queries/handlers/get-drinks.handler';
 import { GetSingleDrinkHandler } from './queries/handlers/get-singleDrink.handler';
 import { GetSingleDrinkQuery } from './queries/impl/get-singleDrink.query';
@@ -22,6 +23,7 @@ import { GetSingleDrinkQuery } from './queries/impl/get-singleDrink.query';
   imports:[CqrsModule, TypeOrmModule.forFeature([Drink])],
   controllers: [DrinkController],
   providers:[
+    DrinksService,
     GetDrinksHandler,
     GetSingleDrinkQuery,GetSingleDrinkHandler,
     CreateDrinkCommand,CreateDrinkHandler,

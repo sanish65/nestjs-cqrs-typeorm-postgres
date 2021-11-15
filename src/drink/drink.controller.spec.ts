@@ -1,122 +1,173 @@
-import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../app.module';
-import * as request from 'supertest';
+import { BuyDrinksDto } from 'src/dto/buy-drinks.dto';
+import { CreateDrinksDto } from 'src/dto/create-drinks.dto';
+import { UpdateDrinksDto } from 'src/dto/update-drinks.dto';
+import { DrinkController } from './drink.controller';
+import { DrinksService } from './drink.service';
 
-describe('App (e2e)', () => {
-  let app: INestApplication;
+describe('Drinks Controller', () => {
+  let controller: DrinkController;
+  let service: DrinksService;
 
-  beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [DrinkController],
+      providers: [
+        {
+          provide: DrinksService,
+          useValue: {
+
+            getAll: jest.fn().mockResolvedValue([
+              { id:1,fund:1000,income:2000,coke:1,pepsi:2,dew:3},
+              { id:2,fund:2000,income:2000,coke:2,pepsi:2,dew:2},
+              { id:3,fund:3000,income:3000,coke:3,pepsi:3,dew:3},
+              { id:4,fund:4000,income:4000,coke:4,pepsi:4,dew:4}
+            ]),
+
+            getDrinksById: jest.fn().mockImplementation((id: string) =>
+              Promise.resolve({
+                fund:1000,
+                income:2000,
+                coke:1,
+                pepsi:2,
+                dew:3,
+                id,
+              }),
+            ),
+
+            createDrinks: jest.fn().mockImplementation((drink: CreateDrinksDto) =>
+                Promise.resolve({ id: '1', ...drink }),
+              ),
+
+            updateDrinks: jest.fn().mockImplementation((id:string,buy:BuyDrinksDto) =>
+            Promise.resolve({ 
+              id :1,
+             }),
+            ),
+
+            patchDrinks: jest.fn().mockImplementation((id:string,drink:UpdateDrinksDto) =>
+                Promise.resolve({ 
+                  id : 1,
+                  ...drink
+                 }),
+              ),
+
+            deleteDrinks: jest.fn().mockResolvedValue({ deleted: true }),
+          },
+        },
+      ],
     }).compile();
-    app = moduleFixture.createNestApplication();
-    await app.init();
+
+    controller = module.get<DrinkController>(DrinkController);
+    service = module.get<DrinksService>(DrinksService);
   });
 
-  afterAll(async () => {
-    await app.close();
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
   });
 
-  describe('DrinkModule', () => {
-    beforeEach(async () => {
-      const uncleared = await request(app.getHttpServer())
-      .get('/drinks/all');
-      await Promise.all(
-        uncleared.body.map(async (drink) => {
-          return request(app.getHttpServer()).delete(`/drinks/delete/${drink.id}`);
-        }),
+  describe('fetchAll', () => {
+    it('should get an array of drinks', async () => {
+      await expect(controller.getAll()).resolves.toEqual([
+        { 
+          id:1,fund:1000,income:2000,coke:1,pepsi:2,dew:3
+        },
+        { 
+          id:2,fund:2000,income:2000,coke:2,pepsi:2,dew:2
+        },
+        { 
+          id:3,fund:3000,income:3000,coke:3,pepsi:3,dew:3
+        },
+        { 
+          id:4,fund:4000,income:4000,coke:4,pepsi:4,dew:4
+        }
+      ]);
+    });
+  });
+
+  describe('new Drinks add', () => {
+    it('should add a new drink', async () => {
+      const newDrinkDTO: CreateDrinksDto = {
+        fund: 5000,
+        income:500,
+        coke:7,
+        pepsi:7,
+        dew:7
+      };
+      const returnData = await controller.createDrinks(newDrinkDTO);
+      expect(returnData).toEqual({
+        id:returnData.id,
+        fund: 5000,
+        income:500,
+        coke:7,
+        pepsi:7,
+        dew:7
+      });
+    });
+  });
+
+  describe('getDrinksByID', () => {
+    it('should get a single drink', async () => {
+      await expect(controller.getDrinksById('1')).resolves.toEqual({
+        fund:1000,
+        income:2000,
+        coke:1,
+        pepsi:2,
+        dew:3,
+        id:'1'
+      });
+    });
+  });
+
+  describe('update the drinks', () => {
+    it('should update a new drink', async () => {
+      const newUpdate = {
+        fund: 5000,
+        income:500,
+        coke:7,
+        pepsi:7,
+        dew:7
+      };
+      const returnData = await controller.patchDrinks('1',newUpdate.fund,newUpdate.income,newUpdate.coke,newUpdate.pepsi,newUpdate.dew);
+      expect(returnData).toEqual({
+        id:'1',
+        ...returnData
+      });
+    });
+  });
+
+  describe('buy drinks individually', () => {
+    it('should get an array of drinks after buying it', async () => {
+      const buyDrinks = {
+        amount:50,
+        drink:"coke",
+      };
+      const returnData = await controller.updateDrinks('1',buyDrinks.drink,buyDrinks.amount);
+      expect(returnData).toEqual({
+        id:'1',
+        ...returnData
+      });
+    });
+  });
+
+  describe('delete Drinks by ID', () => {
+    it('should return that it deleted a drink', async () => {
+      await expect(controller.deleteDrinks('1')).resolves.toEqual(
+        {
+          deleted: true,
+        },
       );
     });
 
-    it('Post drink, get all, get by id, delete', async () => {
-      const newDrink = {
-          fund : 1000000,
-          income: 100000,
-          coke: 1000000,
-          pepsi: 1000000,
-          dew: 100000
-      };
-      const data =  await request(app.getHttpServer())
-        .post('/drinks/add')
-        .send(newDrink)
-        .expect(201);
-
-      expect(data.body).toEqual({
-        id: data.body.id,
-        ...newDrink,
-      });
-
-      const getDrinks = await request(app.getHttpServer()).get('/drinks/all').expect(200);
-      expect(getDrinks.body).toEqual(expect.any(Array));
-      expect(getDrinks.body.length).toBe(1);
-      expect(getDrinks.body[0]).toEqual({
-        id: getDrinks.body[0].id,
-        ...newDrink,
-      });
-
-      const secDrink = await request(app.getHttpServer())
-        .get(`/drinks/drink/${data.body.id}`)
-        .expect(200);
-      expect(secDrink.body).toEqual(data.body);
-      return request(app.getHttpServer())
-        .delete(`/drinks/delete/${data.body.id}`)
-        .expect(200)
-        .expect({ deleted: true });
+    it('using spies to delete a drink', async () => {
+      const deleteSpy = jest
+        .spyOn(service, 'deleteDrinks')
+        .mockResolvedValueOnce({ deleted: false });
+      await expect(
+        controller.deleteDrinks('3'),
+      ).resolves.toEqual({ deleted: false });
+      expect(deleteSpy).toBeCalledWith('3');
     });
 
-
-    it('post drink, get drink by id, update, get by id, delete', async () => {
-      const thirdDrinks = {
-          fund : 20000,
-          income: 0,
-          coke: 200,
-          pepsi: 200,
-          dew: 200
-      };
-      const secondData = await request(app.getHttpServer())
-        .post('/drinks/add')
-        .send(thirdDrinks)
-        .expect(201);
-
-      expect(secondData.body).toEqual({
-        id: secondData.body.id,
-        ...thirdDrinks,
-      });
-
-      const returnDrinks = await request(app.getHttpServer())
-        .get(`/drinks/drink/${secondData.body.id}`)
-        .expect(200);
-
-      expect(returnDrinks.body).toEqual({
-        id: secondData.body.id,
-        ...thirdDrinks,
-       });
-
-
-      const updateDrinks = await request(app.getHttpServer())
-        .patch(`/drinks/patch/${secondData.body.id}`)
-        .send({
-          fund: 100000,
-          income: 0,
-          coke: 200,
-          pepsi:300,
-          dew:400,
-        })
-        .expect(200);
-      expect(secondData.body).toEqual({ 
-        id: secondData.body.id,
-        ...secondData.body,  
-       });
-
-      const updateDrinks2 = await request(app.getHttpServer())
-        .get(`/drinks/drink/${secondData.body.id}`)
-        .expect(200);
-      expect(updateDrinks2.body.affected).toEqual(secondData.body.affected);
-      return request(app.getHttpServer())
-        .delete(`/drinks/delete/${updateDrinks2.body.id}`)
-        .expect(200)
-        .expect({ deleted: true });
-    });
   });
 });

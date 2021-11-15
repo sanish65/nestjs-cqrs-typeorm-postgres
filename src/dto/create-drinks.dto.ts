@@ -6,9 +6,10 @@ import {
     IsNumber,
   } from 'class-validator';
   
-  export class UpdateDrinksDto {
+  export class CreateDrinksDto {
+    @IsOptional()
     @IsString()
-    readonly id: string;
+    readonly id?: string;
 
     @IsNumber()
     readonly fund: number;

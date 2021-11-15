@@ -14,6 +14,5 @@ export class GetDrinksHandler implements IQueryHandler<GetDrinksQuery>{
     
     async execute(query : GetDrinksQuery) : Promise<Drink[]> {
         return await this.drinkRepo.find();
-
     }
 }

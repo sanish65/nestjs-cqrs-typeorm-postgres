@@ -18,9 +18,7 @@ export class UpdateDrinkHandler implements ICommandHandler<UpdateDrinkCommand> {
         console.log(command);
         try{
             const returnVal = await this.drinksRepo.findOne(id);
-            console.log("It is returning this");
             const plain = classToPlain(returnVal);
-            console.log(plain);
             let newValue  = plain;
             let remainder :  number = 0;
             let numOfDrinks : number  = 0;
@@ -81,7 +79,8 @@ export class UpdateDrinkHandler implements ICommandHandler<UpdateDrinkCommand> {
             newValue.fund = newValue.fund - deductSum;
             newValue.income = newValue.income + deductSum;
             const returnIt = await this.drinksRepo.update(id,newValue);
-            return returnIt;
+            if(returnIt)
+                return newValue;
         }
         catch(error) {
             console.log(error);

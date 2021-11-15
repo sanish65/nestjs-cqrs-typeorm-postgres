@@ -15,8 +15,11 @@ export class PatchDrinkHandler implements ICommandHandler<PatchDrinkCommand> {
         try{
         const { id, fund,income,coke,pepsi,dew } = command;
         const newValue = { fund,income,coke,pepsi,dew};
-            const returnIt = await this.drinksRepo.update(id,newValue);
-            return returnIt;
+            const returnVal = await this.drinksRepo.update(id,newValue);
+             if(returnVal){
+                console.log(newValue);
+                return newValue
+            }            
         }
         catch(error) {
             console.log(error);
